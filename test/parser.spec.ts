@@ -369,6 +369,26 @@ describe('for array indexes', () => {
             value: 3
         });
     });
+	  it('must support negative indexes', () => {
+				const t1 = ['a', 'b', 'c', 'd'];
+				expect(resolve(t1, [-2])).to.eql({
+						chain: [-2],
+						scope: t1,
+						options: undefined,
+						idx: 0,
+						exists: true,
+						value: 'c',
+				}); 
+				const t2 = ['a', ['b', ['c', 'd']]];
+				expect(resolve(t2, [-1, -1, -2])).to.eql({
+						chain: [-1, -1, -2],
+						scope: t2,
+						options: undefined,
+						idx: 2,
+						exists: true,
+						value: 'c',
+				});
+		});
 });
 
 describe('tokenizePath', () => {
@@ -381,6 +401,7 @@ describe('tokenizePath', () => {
         expect(tokenizePath('_')).to.eql(['_']); // underscore
         expect(tokenizePath('$')).to.eql(['$']); // dollar
         expect(tokenizePath('0')).to.eql(['0']); // zero
+        expect(tokenizePath('-1')).to.eql(['-1']); // negative one 
     });
     it('must handle a simple path', () => {
         expect(tokenizePath('a.b.c')).to.eql(['a', 'b', 'c']);
@@ -388,6 +409,7 @@ describe('tokenizePath', () => {
     });
     it('must handle simple indexes', () => {
         expect(tokenizePath('[0]')).to.eql(['0']);
+        expect(tokenizePath('[-1]')).to.eql(['-1']);
         expect(tokenizePath('[0][1][2]')).to.eql(['0', '1', '2']);
         expect(tokenizePath('["a"]')).to.eql(['a']);
         expect(tokenizePath('["abc"]')).to.eql(['abc']);

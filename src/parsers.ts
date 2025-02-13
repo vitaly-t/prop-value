@@ -39,7 +39,11 @@ export function resolvePath(this: any, target: any, path: PathInput, options?: I
             break;
         }
         let isOwnProperty = true;
-        value = isThis ? target : !ownProperties || (isOwnProperty = target?.hasOwnProperty(name)) ? target[name] : undefined;
+        if(Array.isArray(target)) {
+            value = target.at(Number(name));
+        } else {
+            value = isThis ? target : !ownProperties || (isOwnProperty = target?.hasOwnProperty(name)) ? target[name] : undefined;
+        }
         while (!ignoreFunctions && typeof value === 'function' && !isClass(value)) {
             value = value.call(target);
         }
@@ -77,7 +81,7 @@ export function resolvePath(this: any, target: any, path: PathInput, options?: I
  * Valid JavaScript property path.
  */
 export function tokenizePath(path: string): string[] {
-    const res = [], reg = /\[\s*(\d+)(?=\s*])|\[\s*(["'])((?:\\.|(?!\2).)*)\2\s*]|[\w$]+/g;
+    const res = [], reg = /\[\s*([-]*\d+)(?=\s*])|\[\s*(["'])((?:\\.|(?!\2).)*)\2\s*]|[-\w$]+/g;
     let a;
     while (a = reg.exec(path)) {
         res.push(a[1] || a[3] || a[0]);
